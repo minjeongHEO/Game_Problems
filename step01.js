@@ -40,14 +40,13 @@
 const PUZZLE = {
   turn: 0,
   numberArray: [],
-  numbers: '',
   numberA: 0,
   numberB: 0,
 };
 
 /** 랜덤 함수 */
 function randomArray() {
-  // 1~8까지의 숫자 배열을 생성 //*1)
+  // 1~8까지의 숫자 배열을 생성 // *1)
   let array = Array.from({ length: 8 }, (_, index) => index + 1);
 
   // 배열섞기 // *2)
@@ -64,12 +63,17 @@ function checkNumbers() {
   return new Promise((resolve, reject) => {
     numbers = prompt('교환할 두 숫자을 입력 \n(","로 구분하여 입력합니다.) > ');
 
-    // *3)
-    if (numbers === '' || numbers === undefined || !numbers.includes(',')) {
-      return false;
+    // 사용자가 '취소' 버튼을 눌렀을 때
+    if (numbers === null) {
+      alert('입력이 취소되었습니다. 게임이 리셋됩니다.');
+      resolve('reset');
     }
 
     // 1. 쉼표를 기준으로 나누어진 두 숫자를 입력받는다.
+    // *3)
+    if (numbers === '' || numbers === undefined || !numbers.includes(',')) {
+      resolve(false);
+    }
     numberA = numbers.split(',')[0];
     numberB = numbers.split(',')[1].trim(); // 단 쉼표 다음에는 스페이스 한 칸이 추가로 있을 수 있다.
 
@@ -77,37 +81,34 @@ function checkNumbers() {
     // 입력이 하나 X
     if (numbers === undefined || numberA === undefined || numberB === undefined || numbers.split(',').length > 2) {
       alert('두개의 수를 입력해주세요.');
-      // return false;
       resolve(false);
     }
 
     // 시작에 공백 X
     if (numberA.charAt(0) == ' ') {
       alert('공백을 제거 후 입력해주세요');
-      // return false;
       resolve(false);
     }
 
     // 한글로 입력 X  // *4)
     if (isNaN(numberA) || isNaN(numberB)) {
       alert('숫자를 입력해주세요.');
-      // return false;
       resolve(false);
     }
 
     // 범위 초과 // *3)
     if (!PUZZLE.numberArray.includes(parseInt(numberA)) || !PUZZLE.numberArray.includes(parseInt(numberB))) {
       alert('입력한 수가 범위를 초과합니다.');
-      // return false;
       resolve(false);
     }
 
     console.log(`${numbers}\n `);
     PUZZLE.numberA = numberA;
     PUZZLE.numberB = numberB;
-    // return true;
     resolve(true);
-  }).then((result) => processResponse(result));
+  })
+    .then((result) => processResponse(result))
+    .catch((error) => console.log(error));
 }
 
 /** 입력받은 수 교환하기 */
@@ -118,13 +119,7 @@ function changeArray() {
   const indexI = array.indexOf(i);
   const indexJ = array.indexOf(j);
 
-  // [array[array.indexOf(i)], array[array.indexOf(j)]] = [j, i];
   [array[indexI], array[indexJ]] = [j, i];
-
-  // console.log('i,j: ', i, j);
-  // console.log(array.indexOf(i));
-  // console.log(array.indexOf(j));
-  // console.log('array 후: ', array);
 
   PUZZLE.numberArray = array;
   console.log(`[${PUZZLE.numberArray}]`);
@@ -146,10 +141,14 @@ function completeCheck() {
 }
 
 function processResponse(result) {
-  if (result) {
+  if (result == 'reset') {
+    PUZZLE.turn = 0;
+    PUZZLE.numberArray = [];
+    PUZZLE.numberA = 0;
+    PUZZLE.numberB = 0;
+  } else if (result) {
     PUZZLE.turn += 1;
     console.log(`🔴 Turn : ${PUZZLE.turn}`);
-
     changeArray();
 
     if (completeCheck()) {
