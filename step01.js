@@ -59,12 +59,7 @@ function checkNumbers() {
 
   // 2. 정상적인 입력이 아닌 경우 다시 입력을 받는다.
   // 입력이 하나 X
-  if (
-    numbers === undefined ||
-    numberA === undefined ||
-    numberB === undefined ||
-    numbers.split(',').length > 2
-  ) {
+  if (numbers === undefined || numberA === undefined || numberB === undefined || numbers.split(',').length > 2) {
     alert('두개의 수를 입력해주세요.');
     return false;
   }
@@ -82,10 +77,7 @@ function checkNumbers() {
   }
 
   // 범위 초과 // *3)
-  if (
-    !PUZZLE.randomSort.includes(parseInt(numberA)) ||
-    !PUZZLE.randomSort.includes(parseInt(numberB))
-  ) {
+  if (!PUZZLE.randomSort.includes(parseInt(numberA)) || !PUZZLE.randomSort.includes(parseInt(numberB))) {
     alert('입력한 수가 범위를 초과합니다.');
     return false;
   }
