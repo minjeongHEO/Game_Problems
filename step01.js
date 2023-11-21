@@ -37,54 +37,16 @@
 
  */
 
-let TURN = 1;
 const PUZZLE = {
-  turn: 1,
-  randomSort: [],
+  turn: 0,
+  numberArray: [],
   numbers: '',
+  numberA: 0,
+  numberB: 0,
 };
 
-/** 입력한 숫자 유효성 체크 */
-function checkNumbers() {
-  numbers = prompt('교환할 두 숫자을 입력 \n(","로 구분하여 입력합니다.) > ');
-
-  // *3)
-  if (numbers === '' || numbers === undefined || !numbers.includes(',')) {
-    return false;
-  }
-
-  // 1. 쉼표를 기준으로 나누어진 두 숫자를 입력받는다.
-  numberA = numbers.split(',')[0];
-  numberB = numbers.split(',')[1].trim(); // 단 쉼표 다음에는 스페이스 한 칸이 추가로 있을 수 있다.
-
-  // 2. 정상적인 입력이 아닌 경우 다시 입력을 받는다.
-  // 입력이 하나 X
-  if (numbers === undefined || numberA === undefined || numberB === undefined || numbers.split(',').length > 2) {
-    alert('두개의 수를 입력해주세요.');
-    return false;
-  }
-
-  // 시작에 공백 X
-  if (numberA.charAt(0) == ' ') {
-    alert('공백을 제거 후 입력해주세요');
-    return false;
-  }
-
-  // 한글로 입력 X  // *4)
-  if (isNaN(numberA) || isNaN(numberB)) {
-    alert('숫자를 입력해주세요.');
-    return false;
-  }
-
-  // 범위 초과 // *3)
-  if (!PUZZLE.randomSort.includes(parseInt(numberA)) || !PUZZLE.randomSort.includes(parseInt(numberB))) {
-    alert('입력한 수가 범위를 초과합니다.');
-    return false;
-  }
-}
-
 /** 랜덤 함수 */
-function random() {
+function randomArray() {
   // 1~8까지의 숫자 배열을 생성 //*1)
   let array = Array.from({ length: 8 }, (_, index) => index + 1);
 
@@ -97,12 +59,116 @@ function random() {
   return array;
 }
 
+/** 숫자 입력 후 유효성 체크 */
+function checkNumbers() {
+  return new Promise((resolve, reject) => {
+    numbers = prompt('교환할 두 숫자을 입력 \n(","로 구분하여 입력합니다.) > ');
+
+    // *3)
+    if (numbers === '' || numbers === undefined || !numbers.includes(',')) {
+      return false;
+    }
+
+    // 1. 쉼표를 기준으로 나누어진 두 숫자를 입력받는다.
+    numberA = numbers.split(',')[0];
+    numberB = numbers.split(',')[1].trim(); // 단 쉼표 다음에는 스페이스 한 칸이 추가로 있을 수 있다.
+
+    // 2. 정상적인 입력이 아닌 경우 다시 입력을 받는다.
+    // 입력이 하나 X
+    if (numbers === undefined || numberA === undefined || numberB === undefined || numbers.split(',').length > 2) {
+      alert('두개의 수를 입력해주세요.');
+      // return false;
+      resolve(false);
+    }
+
+    // 시작에 공백 X
+    if (numberA.charAt(0) == ' ') {
+      alert('공백을 제거 후 입력해주세요');
+      // return false;
+      resolve(false);
+    }
+
+    // 한글로 입력 X  // *4)
+    if (isNaN(numberA) || isNaN(numberB)) {
+      alert('숫자를 입력해주세요.');
+      // return false;
+      resolve(false);
+    }
+
+    // 범위 초과 // *3)
+    if (!PUZZLE.numberArray.includes(parseInt(numberA)) || !PUZZLE.numberArray.includes(parseInt(numberB))) {
+      alert('입력한 수가 범위를 초과합니다.');
+      // return false;
+      resolve(false);
+    }
+
+    console.log(`${numbers}\n `);
+    PUZZLE.numberA = numberA;
+    PUZZLE.numberB = numberB;
+    // return true;
+    resolve(true);
+  }).then((result) => processResponse(result));
+}
+
+/** 입력받은 수 교환하기 */
+function changeArray() {
+  const array = PUZZLE.numberArray;
+  const i = parseInt(PUZZLE.numberA);
+  const j = parseInt(PUZZLE.numberB);
+  const indexI = array.indexOf(i);
+  const indexJ = array.indexOf(j);
+
+  // [array[array.indexOf(i)], array[array.indexOf(j)]] = [j, i];
+  [array[indexI], array[indexJ]] = [j, i];
+
+  // console.log('i,j: ', i, j);
+  // console.log(array.indexOf(i));
+  // console.log(array.indexOf(j));
+  // console.log('array 후: ', array);
+
+  PUZZLE.numberArray = array;
+  console.log(`[${PUZZLE.numberArray}]`);
+}
+
+/** 퍼즐 완성 확인하기 */
+function completeCheck() {
+  const array = PUZZLE.numberArray;
+  const sortArray = PUZZLE.numberArray.toSorted();
+
+  // *5)
+  let isEqual = array.length === sortArray.length && array.every((value, index) => value === sortArray[index]);
+
+  if (isEqual) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function processResponse(result) {
+  if (result) {
+    PUZZLE.turn += 1;
+    console.log(`🔴 Turn : ${PUZZLE.turn}`);
+
+    changeArray();
+
+    if (completeCheck()) {
+      console.log(`축하합니다! ${PUZZLE.turn}턴만에 퍼즐을 완성하셨습니다! \n `);
+    } else {
+      checkNumbers();
+    }
+  } else {
+    console.log(`잘못 입력하셨습니다. 다시 입력해 주세요. \n `);
+    checkNumbers();
+  }
+}
+
 function main() {
   console.log('PUZZLE GAME🧩');
-  console.log(`Turn : ${PUZZLE.turn}`);
+  console.log(`🔴 Turn : ${PUZZLE.turn}`);
 
-  PUZZLE.randomSort = random();
-  console.log(`[${PUZZLE.randomSort}]`);
+  PUZZLE.numberArray = randomArray();
+  console.log(`[${PUZZLE.numberArray}]`);
 
   checkNumbers();
 }
@@ -140,4 +206,9 @@ main();
  *        숫자로 변환할 수 없는 값이 입력되면 NaN을 반환합니다.
  *        예를 들어, Number('123')은 123을 반환하고,
  *                  Number('abc')는 NaN을 반환합니다. 또한 Number('123abc')는 NaN을 반환합니다.
+ * 5) - every() 메소드
+ *      : 배열의 모든 요소가 주어진 판별 함수를 만족하는지를 확인하는 JavaScript의 배열 메소드입니다.
+          판별 함수는 각 요소에 대해 호출되며, 
+          판별 함수가 false를 반환하면 every() 메소드는 즉시 false를 반환하고 나머지 요소를 확인하지 않습니다. 
+          모든 요소가 판별 함수를 만족하면, 즉 판별 함수가 모든 요소에 대해 true를 반환하면 every() 메소드는 true를 반환합니다.
  */
