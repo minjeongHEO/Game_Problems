@@ -115,68 +115,139 @@ const PUZZLE = {
 //     .catch((error) => console.log(error));
 // }
 
-/** 랜덤 함수 */
-function randomArray() {
-  const rows = 4;
-  const cols = 4;
+/** 빈 위치의 x,y값 찾기 */
+function findLoc() {
+  let location = null; // 초기값을 null로 설정
 
-  // 숫자 배열을 생성
-  let nums = Array.from({ length: rows * cols }, (_, index) => index + 1);
-
-  // 이차 배열 생성
-  let array = Array.from({ length: rows }, () => {
-    return Array.from({ length: cols }, () => {
-      return '';
+  PUZZLE.numberArray.forEach((row, rowIdx) => {
+    row.forEach((col, colIdx) => {
+      if (col === '') {
+        location = [rowIdx, colIdx];
+      }
     });
   });
 
-  // 공백 들어갈 랜덤 값
-  let random = Math.floor(Math.random() * nums.length);
+  return location;
+}
 
-  // 값 넣기
-  let k = 0;
-  for (let i = 0; i < rows; i++) {
-    for (let j = 0; j < cols; j++) {
-      if (k == random) {
-        array[i][j] = '';
-      } else {
-        array[i][j] = nums[k];
-      }
-      k++;
+/** 주변 값이 맞는지 확인 */
+function checkNumbers(inputNumber) {
+  let result = false;
+  const dir = [
+    [-1, 0],
+    [0, 1],
+    [1, 0],
+    [0, -1],
+  ];
+  let around = [];
+  const puzzle = PUZZLE.numberArray;
+  const puzzleLen = puzzle.length;
+
+  let [x, y] = findLoc();
+  //상  우  하  좌
+  for (let i = 0; i < 4; i++) {
+    let nx = x + dir[i][0];
+    let ny = y + dir[i][1];
+
+    if (nx >= 0 && ny >= 0 && nx < puzzleLen && ny < puzzleLen) {
+      around.push(parseInt(puzzle[nx][ny]));
     }
   }
-  // console.log('array: ', array);
 
-  // 깊은 복사를 통해 PUZZLE.numberArray에 array 할당 // *1)
-  PUZZLE.numberArray = JSON.parse(JSON.stringify(array));
-  // console.log('PUZZLE.numberArray: ', PUZZLE.numberArray);
+  if (around.includes(parseInt(inputNumber))) {
+    result = true;
+  }
 
-  // 배열 출력 (방법1)
+  return result;
+}
+
+/** 숫자 입력 */
+function inputNumber() {
+  console.log('prompt');
+  inputNumber = prompt('숫자 입력 > ');
+
+  console.log(checkNumbers(inputNumber));
+}
+
+/** array 출력 */
+function printArray() {
   arrayHtml = '';
   PUZZLE.numberArray.forEach((row) => {
-    // console.log(row);
     row.forEach((col) => {
-      // console.log(col);
       arrayHtml += `[${col.toString().padStart(2)}]`;
     });
     arrayHtml += `\n`;
   });
-
-  // 배열 출력 (방법2) // *2,3)
-  // const flattenedArray = PUZZLE.numberArray.flat();
-  // arrayHtml = '';
-  // for (let i = 0; i < flattenedArray.length; i++) {
-  //   if (i != 0 && i % cols == 0) {
-  //     arrayHtml += `\n`;
-  //     arrayHtml += `[${flattenedArray[i].toString().padStart(2, ' ')}]`;
-  //   } else {
-  //     arrayHtml += `[${flattenedArray[i].toString().padStart(2, ' ')}]`;
-  //   }
-  // }
-
   console.log(arrayHtml);
+}
 
-  return array;
+/** 랜덤 함수 생성 */
+function createRandomArray() {
+  return new Promise((resolve, reject) => {
+    const rows = 4;
+    const cols = 4;
+
+    // 숫자 배열을 생성
+    let nums = Array.from({ length: rows * cols }, (_, index) => index + 1);
+
+    // 이차 배열 생성
+    let array = Array.from({ length: rows }, () => {
+      return Array.from({ length: cols }, () => {
+        return '';
+      });
+    });
+
+    // 공백 들어갈 랜덤 값
+    let random = Math.floor(Math.random() * nums.length);
+
+    // 값 넣기
+    let k = 0;
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        if (k == random) {
+          array[i][j] = '';
+        } else {
+          array[i][j] = nums[k];
+        }
+        k++;
+      }
+    }
+    // console.log('array: ', array);
+
+    // 깊은 복사를 통해 PUZZLE.numberArray에 array 할당 // *1)
+    PUZZLE.numberArray = JSON.parse(JSON.stringify(array));
+    // console.log('PUZZLE.numberArray: ', PUZZLE.numberArray);
+
+    // 배열 출력 (방법1)
+    // arrayHtml = '';
+    // PUZZLE.numberArray.forEach((row) => {
+    //   // console.log(row);
+    //   row.forEach((col) => {
+    //     // console.log(col);
+    //     arrayHtml += `[${col.toString().padStart(2)}]`;
+    //   });
+    //   arrayHtml += `\n`;
+    // });
+
+    // 배열 출력 (방법2) // *2,3)
+    // const flattenedArray = PUZZLE.numberArray.flat();
+    // arrayHtml = '';
+    // for (let i = 0; i < flattenedArray.length; i++) {
+    //   if (i != 0 && i % cols == 0) {
+    //     arrayHtml += `\n`;
+    //     arrayHtml += `[${flattenedArray[i].toString().padStart(2, ' ')}]`;
+    //   } else {
+    //     arrayHtml += `[${flattenedArray[i].toString().padStart(2, ' ')}]`;
+    //   }
+    // }
+
+    // console.log(arrayHtml);
+    // console.log(array);
+    // return array;
+    resolve();
+  })
+    .then(() => printArray())
+    .then(() => inputNumber());
 }
 
 function main() {
@@ -185,7 +256,7 @@ function main() {
 
   // console.log(randomArray());
   // PUZZLE.numberArray = randomArray();
-  randomArray();
+  createRandomArray();
 }
 
 main();
