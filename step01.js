@@ -1,42 +1,3 @@
-/**
-1. 1~8까지 랜덤한 숫자 배열 생성
-2. 화면에 출력
-3. 두 숫자를 입력
-4. 정렬되었는지 검사
-5. 아니라면 2번으로 이동
- */
-/**
- * 1. 출력 
-✔  콘솔에 게임 타이틀을 출력한다.
-✔  다음 줄에 현재 턴을 출력한다. 시작은 0이 아니고 1부터이다.
-✔  다음 줄에 1 - 8 까지의 숫자를 무작위로 섞고 한 줄로 출력한다.
-✔  마지막 줄에는 교환할 두 숫자를 입력> 라는 프롬프트를 출력한다.
-  --[출력예시]--
-  간단 숫자 퍼즐
-  Turn 1
-  [2, 4, 8, 6, 7, 3, 5, 1]
-  교환할 두 숫자를 입력>
-
-2. 입력
-✔  쉼표를 기준으로 나누어진 두 숫자를 입력받는다.
-✔  단 쉼표 다음에는 스페이스 한 칸이 추가로 있을 수 있다.
-✔  정상적인 입력이 아닌 경우 다시 입력을 받는다.
-  --[정상 출력예시]--
-  1, 2
-  5,3
-  --[비정상 출력예시]--
-  5 #입력이 하나
-  1, 2 #시작에 공백
-  2, 100 #범위 초과
-  삼, 칠 #한글로 입력
-
-3. 동작
-  정상적인 입력이 왔을 경우 턴을 증가시켜 출력한다.
-  주어진 숫자열에서 입력받은 두 수를 교환해서 출력한다.
-  만약 모든 수가 오름차순으로 정렬되었다면 축하 메시지를 출력하고 프로그램을 종료한다.
-
- */
-
 const PUZZLE = {
   turn: 0,
   numberArray: [],
@@ -44,18 +5,55 @@ const PUZZLE = {
   numberB: 0,
 };
 
-/** 랜덤 함수 */
-function randomArray() {
-  // 1~8까지의 숫자 배열을 생성 // *1)
-  let array = Array.from({ length: 8 }, (_, index) => index + 1);
+/** 퍼즐 완성 확인하기 */
+function completeCheck() {
+  const array = PUZZLE.numberArray;
+  const sortArray = PUZZLE.numberArray.toSorted();
 
-  // 배열섞기 // *2)
-  for (let i = array.length - 1; i > 0; i--) {
-    let j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+  // *5)
+  let isEqual = array.length === sortArray.length && array.every((value, index) => value === sortArray[index]);
+
+  if (isEqual) {
+    return true;
+  } else {
+    return false;
   }
+}
 
-  return array;
+/** 입력받은 수 교환하기 */
+function changeArray() {
+  const array = PUZZLE.numberArray;
+  const i = parseInt(PUZZLE.numberA);
+  const j = parseInt(PUZZLE.numberB);
+  const indexI = array.indexOf(i);
+  const indexJ = array.indexOf(j);
+
+  [array[indexI], array[indexJ]] = [j, i];
+
+  PUZZLE.numberArray = array;
+  console.log(`[${PUZZLE.numberArray}]`);
+}
+
+function processResponse(result) {
+  if (result == 'reset') {
+    PUZZLE.turn = 0;
+    PUZZLE.numberArray = [];
+    PUZZLE.numberA = 0;
+    PUZZLE.numberB = 0;
+  } else if (result) {
+    PUZZLE.turn += 1;
+    console.log(`🔴 Turn : ${PUZZLE.turn}`);
+    changeArray();
+
+    if (completeCheck()) {
+      console.log(`축하합니다! ${PUZZLE.turn}턴만에 퍼즐을 완성하셨습니다! \n `);
+    } else {
+      checkNumbers();
+    }
+  } else {
+    console.log(`잘못 입력하셨습니다. 다시 입력해 주세요. \n `);
+    checkNumbers();
+  }
 }
 
 /** 숫자 입력 후 유효성 체크 */
@@ -96,7 +94,7 @@ function checkNumbers() {
       resolve(false);
     }
 
-    // 범위 초과 // *3)
+    // 범위 초과 X // *3)
     if (!PUZZLE.numberArray.includes(parseInt(numberA)) || !PUZZLE.numberArray.includes(parseInt(numberB))) {
       alert('입력한 수가 범위를 초과합니다.');
       resolve(false);
@@ -111,55 +109,18 @@ function checkNumbers() {
     .catch((error) => console.log(error));
 }
 
-/** 입력받은 수 교환하기 */
-function changeArray() {
-  const array = PUZZLE.numberArray;
-  const i = parseInt(PUZZLE.numberA);
-  const j = parseInt(PUZZLE.numberB);
-  const indexI = array.indexOf(i);
-  const indexJ = array.indexOf(j);
+/** 랜덤 함수 */
+function randomArray() {
+  // 1~8까지의 숫자 배열을 생성 // *1)
+  let array = Array.from({ length: 8 }, (_, index) => index + 1);
 
-  [array[indexI], array[indexJ]] = [j, i];
-
-  PUZZLE.numberArray = array;
-  console.log(`[${PUZZLE.numberArray}]`);
-}
-
-/** 퍼즐 완성 확인하기 */
-function completeCheck() {
-  const array = PUZZLE.numberArray;
-  const sortArray = PUZZLE.numberArray.toSorted();
-
-  // *5)
-  let isEqual = array.length === sortArray.length && array.every((value, index) => value === sortArray[index]);
-
-  if (isEqual) {
-    return true;
-  } else {
-    return false;
+  // 배열섞기 // *2)
+  for (let i = array.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
-}
 
-function processResponse(result) {
-  if (result == 'reset') {
-    PUZZLE.turn = 0;
-    PUZZLE.numberArray = [];
-    PUZZLE.numberA = 0;
-    PUZZLE.numberB = 0;
-  } else if (result) {
-    PUZZLE.turn += 1;
-    console.log(`🔴 Turn : ${PUZZLE.turn}`);
-    changeArray();
-
-    if (completeCheck()) {
-      console.log(`축하합니다! ${PUZZLE.turn}턴만에 퍼즐을 완성하셨습니다! \n `);
-    } else {
-      checkNumbers();
-    }
-  } else {
-    console.log(`잘못 입력하셨습니다. 다시 입력해 주세요. \n `);
-    checkNumbers();
-  }
+  return array;
 }
 
 function main() {
