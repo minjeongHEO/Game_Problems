@@ -1,15 +1,7 @@
 const PUZZLE = {
   turn: 0,
   numberArray: [],
-  numberA: 0,
-  numberB: 0,
 };
-// [
-//   [1, 2, 3, 4],
-//   [5, 6, 7, 8],
-//   [9, 10, 11, 12],
-//   [13, 14, '', 15],
-// ];
 
 // /** 퍼즐 완성 확인하기 */
 // function completeCheck() {
@@ -115,13 +107,15 @@ const PUZZLE = {
 //     .catch((error) => console.log(error));
 // }
 
-/** 빈 위치의 x,y값 찾기 */
-function findLoc() {
+/** 위치의 x,y값 찾기 */
+function findLoc(loc) {
   let location = null; // 초기값을 null로 설정
 
   PUZZLE.numberArray.forEach((row, rowIdx) => {
     row.forEach((col, colIdx) => {
-      if (col === '') {
+      // console.log('loc: ', loc);
+      // console.log('col: ', col);
+      if (col == loc) {
         location = [rowIdx, colIdx];
       }
     });
@@ -132,6 +126,7 @@ function findLoc() {
 
 /** 주변 값이 맞는지 확인 */
 function checkNumbers(inputNumber) {
+  PUZZLE.turn += 1;
   let result = false;
   const dir = [
     [-1, 0],
@@ -143,7 +138,7 @@ function checkNumbers(inputNumber) {
   const puzzle = PUZZLE.numberArray;
   const puzzleLen = puzzle.length;
 
-  let [x, y] = findLoc();
+  let [x, y] = findLoc('');
   //상  우  하  좌
   for (let i = 0; i < 4; i++) {
     let nx = x + dir[i][0];
@@ -158,15 +153,52 @@ function checkNumbers(inputNumber) {
     result = true;
   }
 
-  return result;
+  console.log(`🔴 Turn : ${PUZZLE.turn}`);
+  return { result, inputNumber, x, y };
+}
+
+/** 입력한 퍼즐 변경 */
+function changePuzzle(result, inputNumber, x, y) {
+  if (result) {
+    const puzzle = PUZZLE.numberArray;
+    console.log('inputNumber: ', inputNumber);
+    console.log('parseInt(inputNumber): ', parseInt(inputNumber));
+    let [changeX, changeY] = findLoc(parseInt(inputNumber));
+
+    puzzle[x][y] = inputNumber;
+    puzzle[changeX][changeY] = '';
+    PUZZLE.numberArray = JSON.parse(JSON.stringify(puzzle));
+
+    // console.log(`🔴 Turn : ${PUZZLE.turn}`);
+  }
+}
+
+/** 퍼즐 완성 확인하기 */
+function successCheck() {
+  console.log('successCheck');
+  // 만약 성공안하면 다시 숫자입력
+  // if(){}
+  inputNumber();
 }
 
 /** 숫자 입력 */
 function inputNumber() {
-  console.log('prompt');
-  inputNumber = prompt('숫자 입력 > ');
+  return new Promise((resolve, reject) => {
+    console.log('prompt');
+    let inputNum = prompt('숫자 입력 > ').trim();
 
-  console.log(checkNumbers(inputNumber));
+    //숫자인지 확인
+    if (isNaN(inputNum)) {
+      alert('숫자를 입력해주세요.');
+      return inputNumber();
+    }
+
+    resolve(inputNum);
+  })
+    .then((inputNum) => checkNumbers(inputNum))
+    .then(({ result, inputNumber, x, y }) => changePuzzle(result, inputNumber, x, y))
+    .then(() => printArray())
+    .then(() => successCheck());
 }
 
 /** array 출력 */
