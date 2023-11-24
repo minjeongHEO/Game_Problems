@@ -173,12 +173,49 @@ function changePuzzle(result, inputNumber, x, y) {
   }
 }
 
-/** 퍼즐 완성 확인하기 */
-function successCheck() {
-  console.log('successCheck');
-  // 만약 성공안하면 다시 숫자입력
-  // if(){}
+/** 퍼즐 완성 확인 - 2 */
+function checkArrayEquality(arr1, arr2) {
+  return JSON.stringify(arr1) === JSON.stringify(arr2);
+}
+
+/** 퍼즐 완성 확인 - 1 */
+function checkSuccess() {
+  console.log('checkSuccess');
+  const numArr = Array.from({ length: 15 }, (_, index) => index + 1);
+  const puzzle = PUZZLE.numberArray;
+  const puzzleLen = puzzle.length;
+  const directions = ['rowDownRight', 'colDownRight', 'rowDownLeft', 'colUpRight', 'rowUpLeft', 'colUpLeft', 'rowUpRight', 'colDownLeft'];
+
+  for (const dir of directions) {
+    const checkArr = [];
+    for (let i = 0; i < puzzleLen; i++) {
+      const row = [];
+      const col = [];
+      for (let j = 0; j < puzzleLen; j++) {
+        if (puzzle[i][j] !== '') {
+          // row.push(parseInt(puzzle[i][j].trim()));
+          row.push(parseInt(puzzle[i][j]));
+        }
+        if (puzzle[j][i] !== '') {
+          // col.push(parseInt(puzzle[j][i].trim()));
+          col.push(parseInt(puzzle[j][i]));
+        }
+      }
+      if (dir.includes('Down')) {
+        checkArr.push(...row);
+      } else {
+        checkArr.push(...col);
+      }
+    }
+
+    if (checkArrayEquality(checkArr, numArr)) {
+      console.log(`🎉 축하합니다! ${PUZZLE.turn}턴만에 퍼즐을 완성하셨습니다!`);
+      return true;
+    }
+  }
+  console.log('퍼즐이 완성되지 않았습니다. 다시 숫자를 입력하세요.');
   inputNumber();
+  return false;
 }
 
 /** 숫자 입력 */
@@ -198,7 +235,8 @@ function inputNumber() {
     .then((inputNum) => checkNumbers(inputNum))
     .then(({ result, inputNumber, x, y }) => changePuzzle(result, inputNumber, x, y))
     .then(() => printArray())
-    .then(() => successCheck());
+    .then(() => checkSuccess())
+    .catch((error) => console.log(error));
 }
 
 /** array 출력 */
@@ -244,7 +282,6 @@ function createRandomArray() {
         k++;
       }
     }
-    // console.log('array: ', array);
 
     // 깊은 복사를 통해 PUZZLE.numberArray에 array 할당 // *1)
     PUZZLE.numberArray = JSON.parse(JSON.stringify(array));
