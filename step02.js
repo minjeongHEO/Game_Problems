@@ -168,8 +168,6 @@ function changePuzzle(result, inputNumber, x, y) {
     puzzle[x][y] = inputNumber;
     puzzle[changeX][changeY] = '';
     PUZZLE.numberArray = JSON.parse(JSON.stringify(puzzle));
-
-    // console.log(`🔴 Turn : ${PUZZLE.turn}`);
   }
 }
 
@@ -271,13 +269,19 @@ function createRandomArray() {
     let random = Math.floor(Math.random() * nums.length);
 
     // 값 넣기
+    let afterBlank = false;
     let k = 0;
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
         if (k == random) {
           array[i][j] = '';
+          afterBlank = true;
         } else {
-          array[i][j] = nums[k];
+          if (afterBlank) {
+            array[i][j] = nums[k - 1];
+          } else {
+            array[i][j] = nums[k];
+          }
         }
         k++;
       }
@@ -310,9 +314,6 @@ function createRandomArray() {
     //   }
     // }
 
-    // console.log(arrayHtml);
-    // console.log(array);
-    // return array;
     resolve();
   })
     .then(() => printArray())
