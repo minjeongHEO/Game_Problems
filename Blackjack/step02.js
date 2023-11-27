@@ -253,7 +253,7 @@ function checkMoney(state) {
     return betMoney(BLACKJACK);
   }
 
-  BLACKJACK.money -= bettingMoney;
+  // BLACKJACK.money -= bettingMoney;
 
   return BLACKJACK;
 }
