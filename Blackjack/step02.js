@@ -89,25 +89,38 @@
 //     console.log('카드를 더 받겠습니까? (Y / N)');
 //   }
 
-// 카드를 더 받겠습니까 함수
+function moreCardAfter() {}
+
 /** 카드 더 받을 지 여부 */
 function moreCard(state) {
+  // let BLACKJACK = state;
+  console.log('4. moreCard() 더 카드를 받을지 여부');
+  console.log(state);
+
   let answer = prompt('카드를 더 받겠습니까? (Y / N)');
   if (!(answer == 'Y' || answer == 'y' || answer == 'N' || answer == 'n' || answer == null || answer == 'codesquad')) {
     console.log('잘못 입력하셨습니다.');
     return moreCard(state);
   }
 
+  console.log(`카드를 더 받겠습니까? (Y / N) ${answer}`);
+
+  let seperate = '';
   if (answer == 'Y' || answer == 'y') {
-    devideCard(state, 'player');
+    seperate = 'player';
+    return { state, seperate };
+  } else if (answer == 'N' || answer == 'n') {
+    seperate = 'dealer';
+    return { state, seperate };
+  } else if (answer == 'codesquad') {
+    seperate = 'pass';
+    return { state, seperate };
+    //입력화면에서 'codesquad' 라고 입력할 경우 남아 있는 덱의 카드를 순서대로 6장 보여준다.
+    // console.log('덱의 카드 [2][10][9][5][7]');
+    // devideCard(state, 'pass');
+  } else {
+    return { state, seperate };
   }
-
-  //입력화면에서 'codesquad' 라고 입력할 경우 남아 있는 덱의 카드를 순서대로 6장 보여준다.
-  if (answer == 'codesquad') {
-    console.log(`덱의 카드 [2][10][9][5][7]`);
-  }
-
-  return;
 }
 
 function promptType() {
@@ -115,135 +128,199 @@ function promptType() {
   // moreGame(); //한 게임 더 하시겠습니까?
 }
 
-/** 카드 승패 비교 */
-function compareCard(state, playerSum, dealerSum) {
-  return new Promise((resolve, reject) => {
-    let BLACKJACK = state;
-
-    //카드 승패 비교
-    // 블랙잭(합이 21)으로 승리할 경우 베팅한 금액의 두 배를 돌려받는다.
-    // 단 딜러가 21을 뽑을 경우도 딜러가 승리한다.
-    if (playerSum == 21) {
-      //플레이어 승리
-    } else if (dealerSum == 21) {
-      //딜러 승리
-    }
-
-    // [1. 딜러의 승리]
-    // if 플레이어가 받은 카드의 합이 22이상이면 무조건 플레이어의 패배(딜러의 승리)이다.
-    // 이 때 딜러는 카드를 받지 않는다.
-    // 딜러의 카드합이 더 큰 값이라면 딜러의 승리이다.
-    if (playerSum >= 22 || playerSum < dealerSum) {
-      BLACKJACK.lose += 1;
-      resolve(BLACKJACK, 'dealer'); //딜러승리
-
-      // [2. 플레이어의 승리]
-      // 플레이어의 카드 합이 딜러보다 크다면 플레이어의 승리이다.
-      // 딜러의 카드가 22 이상이어도 플레이어의 승리이다.
-    } else if (playerSum > dealerSum || dealerSum >= 22) {
-      BLACKJACK.win += 1;
-      resolve(BLACKJACK, 'player'); //플레이어 승리
-    }
-
-    // return { BLACKJACK, playerSum, dealerSum };
-    // }
-
-    console.log(`카드를 더 받겠습니까? (Y / N)`);
-    console.log(`플레이어: [10][11]`);
-    console.log(`총합: 21`);
-
-    console.log(`당신의 패배입니다. 현재 재산: 900`);
-    console.log(`한 게임 더 하시겠습니까? (Y / N) yes`);
-
-    console.log(`딜러: [10][10]`);
-    console.log(`딜러의 카드 합계는 20입니다.`);
-    console.log(`당신의 승리입니다. `);
-    console.log(`현재 남은 자산: 2700`);
-    console.log('한 게임 더 하시겠습니까? (Y / N) y');
-
-    console.log(`카드를 더 받겠습니까? (Y / N) => codesquad`);
-    //입력화면에서 'codesquad' 라고 입력할 경우 남아 있는 덱의 카드를 순서대로 6장 보여준다.
-    console.log(`덱의 카드 [2][10][9][5][7]`);
-
-    // if 딜러는 16 이하이면 무조건 카드를 받고, else      17 이상이면 카드를 받지 않는다.
-    if (dealerSum <= 16) {
-      BLACKJACK = devideCard(BLACKJACK, 'dealer');
-    }
-
-    // 플레이어가 카드를 더 이상 안 받기로 결정한 시점에서
-    // 딜러도 카드를 받는다.
-
-    // 같은 값이라면 서로 비기게 된다.
-    // BLACKJACK.tie += 1;
-    // resolve('tie');
-
-    // 한 게임이 종료되면 플레이어는 다시 게임을 할지 여부를 결정할 수 있다.
-    // let player = cards[0];
-
-    // let dealer = cards[1];
-
-    // BLACKJACK.player.push(player);
-    // BLACKJACK.dealer.push(dealer);
+/** 카드 합계 */
+function cardSum(state, seperate) {
+  console.log('cardSum()');
+  let sum = 0;
+  let card = '';
+  let BLACKJACK;
+  if (seperate == 'dealer') {
+    BLACKJACK = state.dealer;
+    console.log(BLACKJACK);
+  } else if (seperate == 'player') {
+    BLACKJACK = state.player;
+  }
+  BLACKJACK.forEach((element) => {
+    sum += element;
+    card += `[${element.toString().padStart(2)}] `;
   });
-  // .then((result) => printResult(result))
-  // .then(() => continueGame());
+  return [card, sum];
 }
 
-/** 결과 출력 */
-function printResult(state, seperate) {
-  let turn = seperate === undefined ? '' : seperate;
-  console.log('printResult()');
+/** 카드 승패 비교 */
+function compareCard(BLACKJACK, seperate) {
+  console.log('compareCard()');
+  console.log(BLACKJACK);
+  8;
+  // 플레이어가 카드를 더 안 받기로 결정하면 딜러의 카드합과 승부결과를 출력해 준다.
+  if (seperate == 'dealer') {
+    let [dealerCard, dealerSum] = cardSum(BLACKJACK, 'dealer');
+    console.log(`딜러: ${dealerCard}`);
+    console.log(`딜러의 카드 합계는 ${dealerSum}입니다.`);
 
-  let BLACKJACK = state;
-  if (turn == 'turn') {
-    BLACKJACK.turn += 1;
-    // const turn = state.turn;
-    const turn = BLACKJACK.turn;
-    console.log(BLACKJACK);
-    // console.log(`=========== Game ${turn + 1} ===========`);
-    console.log(`=========== Game ${turn} ===========`);
+    let [playerCard, playerSum] = cardSum(BLACKJACK, 'player');
+
+    // [2. 플레이어의 승리]
+    // 플레이어의 카드 합이 딜러보다 크다면 플레이어의 승리이다.
+    // 딜러의 카드가 22 이상이어도 플레이어의 승리이다.
+    if (playerSum > dealerSum || dealerSum >= 22) {
+      if (playerSum == 21) {
+        // 블랙잭(합이 21)으로 승리할 경우 베팅한 금액의 두 배를 돌려받는다.
+        let bettingMoney = BLACKJACK.betting * 2;
+        BLACKJACK.money += bettingMoney;
+      } else {
+        let bettingMoney = BLACKJACK.betting;
+        BLACKJACK.money += bettingMoney;
+      }
+      BLACKJACK.win += 1;
+      console.log('당신의 승리입니다.');
+      console.log(`현재 남은 자산: ${BLACKJACK.money}`);
+    }
   }
 
-  let card = '';
-  let playerSum = 0;
+  //카드 승패 비교
+  // 블랙잭(합이 21)으로 승리할 경우 베팅한 금액의 두 배를 돌려받는다.
+  // 단 딜러가 21을 뽑을 경우도 딜러가 승리한다.
+  // if (playerSum == 21) {
+  //   //플레이어 승리
+  // } else if (dealerSum == 21) {
+  //   //딜러 승리
+  // }
 
-  BLACKJACK.player.forEach((element) => {
-    playerSum += element;
-    card += ` [${element.toString().padStart(2)}]`;
-  });
+  // // [1. 딜러의 승리]
+  // // if 플레이어가 받은 카드의 합이 22이상이면 무조건 플레이어의 패배(딜러의 승리)이다.
+  // // 이 때 딜러는 카드를 받지 않는다.
+  // // 딜러의 카드합이 더 큰 값이라면 딜러의 승리이다.
+  // if (playerSum >= 22 || playerSum < dealerSum) {
+  //   // 패배하면 베팅한 금액은 사라진다.
+  //   let bettingMoney = BLACKJACK.betting;
+  //   BLACKJACK.money -= bettingMoney;
+  //   BLACKJACK.lose += 1;
+  //   resolve(BLACKJACK, 'dealer'); //딜러승리
+
+  //   // [3. 무승부]
+  //   // 같은 값이라면 서로 비기게 된다.
+  // } else if (playerSum == dealerSum) {
+  //   BLACKJACK.tie += 1;
+  //   resolve(BLACKJACK, 'tie'); //무승부
+  // }
+
+  // // console.log(`카드를 더 받겠습니까? (Y / N) => codesquad`);
+  // // //입력화면에서 'codesquad' 라고 입력할 경우 남아 있는 덱의 카드를 순서대로 6장 보여준다.
+  // // console.log(`덱의 카드 [2][10][9][5][7]`);
+
+  // // if 딜러는 16 이하이면 무조건 카드를 받고, else      17 이상이면 카드를 받지 않는다.
+  // if (dealerSum <= 16) {
+  //   BLACKJACK = devideCard(BLACKJACK, 'dealer');
+  // }
+}
+/** 카드 승패 비교 */
+// function compareCard(state, playerSum, dealerSum) {
+//   return new Promise((resolve, reject) => {
+//     let BLACKJACK = state;
+
+//     //카드 승패 비교
+//     // 블랙잭(합이 21)으로 승리할 경우 베팅한 금액의 두 배를 돌려받는다.
+//     // 단 딜러가 21을 뽑을 경우도 딜러가 승리한다.
+//     if (playerSum == 21) {
+//       //플레이어 승리
+//     } else if (dealerSum == 21) {
+//       //딜러 승리
+//     }
+
+//     // [1. 딜러의 승리]
+//     // if 플레이어가 받은 카드의 합이 22이상이면 무조건 플레이어의 패배(딜러의 승리)이다.
+//     // 이 때 딜러는 카드를 받지 않는다.
+//     // 딜러의 카드합이 더 큰 값이라면 딜러의 승리이다.
+//     if (playerSum >= 22 || playerSum < dealerSum) {
+//       // 패배하면 베팅한 금액은 사라진다.
+//       let bettingMoney = BLACKJACK.betting;
+//       BLACKJACK.money -= bettingMoney;
+//       BLACKJACK.lose += 1;
+//       resolve(BLACKJACK, 'dealer'); //딜러승리
+
+//       // [2. 플레이어의 승리]
+//       // 플레이어의 카드 합이 딜러보다 크다면 플레이어의 승리이다.
+//       // 딜러의 카드가 22 이상이어도 플레이어의 승리이다.
+//     } else if (playerSum > dealerSum || dealerSum >= 22) {
+//       if (playerSum == 21) {
+//         //블랙잭(합이 21)으로 승리할 경우 베팅한 금액의 두 배를 돌려받는다.
+//         let bettingMoney = BLACKJACK.betting * 2;
+//         BLACKJACK.money += bettingMoney;
+//       } else {
+//         let bettingMoney = BLACKJACK.betting;
+//         BLACKJACK.money += bettingMoney;
+//       }
+//       BLACKJACK.win += 1;
+//       resolve(BLACKJACK, 'player'); //플레이어 승리
+
+//       // [3. 무승부]
+//       // 같은 값이라면 서로 비기게 된다.
+//     } else if (playerSum == dealerSum) {
+//       BLACKJACK.tie += 1;
+//       resolve(BLACKJACK, 'tie'); //무승부
+//     }
+
+//     // return { BLACKJACK, playerSum, dealerSum };
+//     // }
+
+//     // console.log(`카드를 더 받겠습니까? (Y / N)`);
+//     // console.log(`플레이어: [10][11]`);
+//     // console.log(`총합: 21`);
+
+//     // console.log(`당신의 패배입니다. 현재 재산: 900`);
+//     // console.log(`한 게임 더 하시겠습니까? (Y / N) yes`);
+
+//     // console.log(`딜러: [10][10]`);
+//     // console.log(`딜러의 카드 합계는 20입니다.`);
+//     // console.log(`당신의 승리입니다. `);
+//     // console.log(`현재 남은 자산: 2700`);
+//     // console.log('한 게임 더 하시겠습니까? (Y / N) y');
+
+//     // console.log(`카드를 더 받겠습니까? (Y / N) => codesquad`);
+//     // //입력화면에서 'codesquad' 라고 입력할 경우 남아 있는 덱의 카드를 순서대로 6장 보여준다.
+//     // console.log(`덱의 카드 [2][10][9][5][7]`);
+
+//     // if 딜러는 16 이하이면 무조건 카드를 받고, else      17 이상이면 카드를 받지 않는다.
+//     if (dealerSum <= 16) {
+//       BLACKJACK = devideCard(BLACKJACK, 'dealer');
+//     }
+
+//     // 플레이어가 카드를 더 이상 안 받기로 결정한 시점에서
+//     // 딜러도 카드를 받는다.
+
+//     // 한 게임이 종료되면 플레이어는 다시 게임을 할지 여부를 결정할 수 있다.
+//     // let player = cards[0];
+
+//     // let dealer = cards[1];
+
+//     // BLACKJACK.player.push(player);
+//     // BLACKJACK.dealer.push(dealer);
+//   });
+//   // .then((result) => printResult(result))
+//   // .then(() => continueGame());
+// }
+
+/** 결과 출력 */
+function printResult(state) {
+  console.log('3. printResult() 결과 출력');
+  console.log(state);
+  let BLACKJACK = state;
+  BLACKJACK.turn += 1;
+  const turn = BLACKJACK.turn;
+  console.log(BLACKJACK);
+  console.log(`=========== Game ${turn} ===========`);
+
+  let [card, playerSum] = cardSum(state, 'player');
   console.log(`플레이어 : ${card}`);
   console.log(`총합 : ${playerSum}`);
 
-  let dealerSum = 0;
-  BLACKJACK.dealer.forEach((element) => {
-    dealerSum += element;
-    // card += ` [${element.toString().padStart(2)}]`;
-  });
-  // console.log(`플레이어: ${card}`);
-  // console.log(`총합: ${dealerSum}`);
-
-  // card = '';
-  // BLACKJACK.dealer.forEach((element) => {
-  //   card += ` [${element.toString().padStart(2)}]`;
-  // });
-  // console.log(`Dealer:${card}`);
-
-  // if (result == 'player') {
-  //   console.log('🎉당신이 이겼습니다.');
-  // } else if (result == 'dealer') {
-  //   console.log('💸딜러가 이겼습니다.');
-  // } else if (result == 'tie') {
-  //   console.log('🧊비겼습니다.');
-  // }
-
-  // BLACKJACK.tie > 0;
-  // console.log(`현재 전적: ${BLACKJACK.win}승 ${BLACKJACK.tie > 0 ? BLACKJACK.tie + '무 ' : ''}${BLACKJACK.lose}패`);
-  return { BLACKJACK, playerSum, dealerSum };
+  return BLACKJACK;
 }
 
 /** 배팅금액 체크 */
 function checkMoney(state) {
-  console.log('checkMoney()');
+  console.log('1. checkMoney() 배팅금액 체크');
   let BLACKJACK = state;
   let currentMoney = BLACKJACK.money;
   let bettingMoney = BLACKJACK.betting;
@@ -260,7 +337,8 @@ function checkMoney(state) {
 
 /** 카드 할당받기 */
 function devideCard(state, who) {
-  console.log('devideCard()');
+  console.log('2. devideCard() 카드 할당받기');
+  console.log(state);
   const money = state.betting;
   let BLACKJACK = state;
 
@@ -273,35 +351,41 @@ function devideCard(state, who) {
     BLACKJACK.dealer.push(BLACKJACK.cards.pop());
   }
 
-  console.log(BLACKJACK);
   return BLACKJACK;
 }
 
 /** 얼마를 배팅할지 */
 function betMoney(state) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      let money = prompt('얼마를 거시겠습니까? \n숫자만 입력하세요.');
-      //머니 유효성 체크 (숫자인지)
-      if (isNaN(money)) {
-        console.log('숫자만 입력하세요');
-        return betMoney();
-        // return reject(new Error('betMoney() e: 숫자만 입력하세요'));
-      }
-
-      let BLACKJACK = state;
-      BLACKJACK.betting = money;
-      resolve(BLACKJACK);
-    }, 500);
-  })
-    .then((result) => checkMoney(result))
-    .then((BLACKJACK) => devideCard(BLACKJACK, 'both'))
-    .then((BLACKJACK) => printResult(BLACKJACK))
-    .then(({ BLACKJACK, playerSum, dealerSum }) => compareCard(BLACKJACK, playerSum, dealerSum))
-    .then(({ BLACKJACK, type }) => promptType(BLACKJACK, type))
-    .catch((error) => {
-      console.error(error);
-    });
+  return (
+    new Promise((resolve, reject) => {
+      setTimeout(() => {
+        let money = prompt('얼마를 거시겠습니까? \n숫자만 입력하세요.');
+        //머니 유효성 체크 (숫자인지)
+        if (isNaN(money)) {
+          console.log('숫자만 입력하세요');
+          return betMoney();
+          // return reject(new Error('betMoney() e: 숫자만 입력하세요'));
+        }
+        console.log(`얼마를 거시겠습니까? ${money}`);
+        let BLACKJACK = state;
+        BLACKJACK.betting = parseInt(money);
+        resolve(BLACKJACK);
+      }, 500);
+    })
+      .then((result) => checkMoney(result)) //배팅금액 체크
+      .then((BLACKJACK) => devideCard(BLACKJACK, 'both')) //카드할당받기
+      .then((BLACKJACK) => printResult(BLACKJACK)) //결과 출력
+      .then((BLACKJACK) => moreCard(BLACKJACK)) //더 카드를 받을지 여부
+      .then(({ state, seperate }) => {
+        console.log('After destructuring:', state, seperate);
+        return compareCard(state, seperate);
+      }) //카드승패여부를 확인후
+      // .then(({ BLACKJACK, playerSum, dealerSum }) => compareCard(BLACKJACK, playerSum, dealerSum)) //카드승패여부를 확인후
+      // .then(({ BLACKJACK, type }) => promptType(BLACKJACK, type)) //더 카드를 받을지 여부를 표시
+      .catch((error) => {
+        console.error(error);
+      })
+  );
 }
 
 /** 카드 뽑기 */
@@ -350,8 +434,6 @@ function main() {
   // BLACKJACK.cards = JSON.parse(JSON.stringify(randomCard()));
 
   betMoney(BLACKJACK);
-
-  compareCard(cards);
 }
 
 main();
