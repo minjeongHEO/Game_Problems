@@ -103,27 +103,51 @@
 
 # 문제 3: 간단 블랙잭
 
-1.  출력
+1.  입력
 
-    ✔ 콘솔에 플레이어의 카드를 무작위로 선택해서 출력.  
-    ✔ 콘솔에 딜러의 카드도 무작위로 선택해서 출력.  
-    ✔ 다음 줄에 현재 턴을 출력한다.
+    ✔ 얼마를 배팅할지 여부를 결정.
 
-        randomCard()
-        BLACKJACK.turn
+        betMoney()
 
 2.  동작
 
-    ✔ 두 카드값 비교 후 승패 결정.
+    ✔ 배팅 금액 체크
 
-        compareCard()
+        checkMoney()
+
+    ✔ 카드 할당 받기
+
+        devideCard()
+
+3.  출력
+
+    ✔ 결과를 출력 후
+
         printResult()
 
-3.  입력
+4.  동작
 
-    ✔ 게임 중단 여부를 결정.
+    ✔ 카드를 더 받을 지 여부
 
-        continueGame()
+        moreCard()
+
+    ✔ 그 결과에 따라
+
+            moreCardAfter()
+
+            ✔ 카드 할당 받고
+                devideCard()
+
+            ✔ 승패 여부
+                winLose()
+
+                - 잔액이 없으면 게임 종료 ❌
+                        finishGame()
+                        - 다시 게임 시작하려면
+                                main()
+
+                - 잔액이 있으면 게임 계속 ✔
+                        moreGame()
 
 ---
 
