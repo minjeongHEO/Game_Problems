@@ -70,6 +70,13 @@ function cardSum(state, seperate) {
 function finishGame(state) {
   console.log(`${state.win}승 ${state.tie}무 ${state.lose}패로 🤑${state.money}원의 자산이 남았습니다.`);
   console.log(`플레이 해 주셔서 감사합니다.`);
+
+  // 각 게임이 종료되었을 경우 다시 게임하기를 선택할 수 있다.
+  setTimeout(() => {
+    if (confirm('다시 게임하시겠습니까?')) {
+      main();
+    }
+  }, 1000);
 }
 
 /** 한 게임 더 */
