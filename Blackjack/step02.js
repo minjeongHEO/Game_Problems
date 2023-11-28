@@ -186,7 +186,7 @@ function moreCardAfter(BLACKJACK, seperate) {
 function printResult(state) {
   // console.log('3. printResult() 결과 출력');
   // console.log(state);
-  console.log(`=========== Game ${state.turn} ===========`);
+  // console.log(`=========== Game ${state.turn} ===========`);
 
   let [card, playerSum] = cardSum(state, 'player');
   console.log(`플레이어 : ${card}`);
@@ -246,6 +246,9 @@ function betMoney(state) {
       }
 
       console.log(`얼마를 거시겠습니까? ${money}`);
+
+      console.log(`=========== Game ${state.turn} ===========`);
+
       state.betting = parseInt(money);
       resolve(state);
     }, 500);
