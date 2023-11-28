@@ -93,34 +93,42 @@ function moreCardAfter() {}
 
 /** 카드 더 받을 지 여부 */
 function moreCard(state) {
-  // let BLACKJACK = state;
-  console.log('4. moreCard() 더 카드를 받을지 여부');
-  // console.log(state);
+  new Promise((resolve, reject) => {
+    console.log('4. moreCard() 더 카드를 받을지 여부');
 
-  let answer = prompt('카드를 더 받겠습니까? (Y / N)');
-  if (!(answer == 'Y' || answer == 'y' || answer == 'N' || answer == 'n' || answer == null || answer == 'codesquad')) {
-    console.log('잘못 입력하셨습니다.');
-    return moreCard(state);
-  }
+    let answer = prompt('카드를 더 받겠습니까? (Y / N)');
+    console.log(`카드를 더 받겠습니까? (Y / N) ${answer}`);
+    if (!(answer == 'Y' || answer == 'y' || answer == 'N' || answer == 'n' || answer == null || answer == 'codesquad')) {
+      console.log('잘못 입력하셨습니다.');
+      // resolve(moreCard(state));
+      reject(new Error('retry'));
+    }
 
-  console.log(`카드를 더 받겠습니까? (Y / N) ${answer}`);
+    let seperate = '';
+    //받음
+    if (answer == 'Y' || answer == 'y') {
+      seperate = 'player';
 
-  let seperate = '';
-  if (answer == 'Y' || answer == 'y') {
-    seperate = 'player';
-    return { state, seperate };
-  } else if (answer == 'N' || answer == 'n') {
-    seperate = 'dealer';
-    return { state, seperate };
-  } else if (answer == 'codesquad') {
-    seperate = 'pass';
-    return { state, seperate };
-    //입력화면에서 'codesquad' 라고 입력할 경우 남아 있는 덱의 카드를 순서대로 6장 보여준다.
-    // console.log('덱의 카드 [2][10][9][5][7]');
-    // devideCard(state, 'pass');
-  } else {
-    return { state, seperate };
-  }
+      //안받음
+    } else if (answer == 'N' || answer == 'n') {
+      seperate = 'dealer';
+
+      //치트
+    } else if (answer == 'codesquad') {
+      seperate = 'codesquad';
+      //입력화면에서 'codesquad' 라고 입력할 경우 남아 있는 덱의 카드를 순서대로 6장 보여준다.
+      // console.log('덱의 카드 [2][10][9][5][7]');
+      // devideCard(state, 'pass');
+    }
+    resolve({ state, seperate });
+  })
+    .then(({ state, seperate }) => compareCard(state, seperate)) //카드승패여부를 확인
+    .catch((error) => {
+      if (error.message === 'retry') {
+        return moreCard(state); // 재시도
+      }
+      throw error; // 다른 에러는 다시 던지기
+    });
 }
 
 function promptType() {
@@ -136,9 +144,10 @@ function cardSum(state, seperate) {
   let BLACKJACK;
   if (seperate == 'dealer') {
     BLACKJACK = state.dealer;
-    console.log(BLACKJACK);
   } else if (seperate == 'player') {
     BLACKJACK = state.player;
+  } else if (seperate == 'codesquad') {
+    BLACKJACK = state.cards;
   }
   BLACKJACK.forEach((element) => {
     sum += element;
@@ -175,6 +184,12 @@ function compareCard(BLACKJACK, seperate) {
       console.log('당신의 승리입니다.');
       console.log(`현재 남은 자산: ${BLACKJACK.money}`);
     }
+
+    //입력화면에서 'codesquad' 라고 입력할 경우 남아 있는 덱의 카드를 순서대로 6장 보여준다.
+  } else if (seperate == 'codesquad') {
+    let [deckCard, deckSum] = cardSum(BLACKJACK, 'codesquad');
+    console.log(`덱의 카드 ${deckCard}`);
+    return moreCard(BLACKJACK);
   }
 
   //카드 승패 비교
@@ -392,7 +407,8 @@ function betMoney(state) {
       .then((BLACKJACK) => devideCard(BLACKJACK, 'both')) //카드할당받기
       .then((BLACKJACK) => printResult(BLACKJACK)) //결과 출력
       .then((BLACKJACK) => moreCard(BLACKJACK)) //더 카드를 받을지 여부
-      .then(({ state, seperate }) => compareCard(state, seperate)) //카드승패여부를 확인후
+
+      // .then(({ state, seperate }) => compareCard(state, seperate)) //카드승패여부를 확인후
       // .then(({ BLACKJACK, playerSum, dealerSum }) => compareCard(BLACKJACK, playerSum, dealerSum)) //카드승패여부를 확인후
       // .then(({ BLACKJACK, type }) => promptType(BLACKJACK, type)) //더 카드를 받을지 여부를 표시
       .catch((error) => {
