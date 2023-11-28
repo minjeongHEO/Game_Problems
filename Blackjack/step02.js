@@ -95,7 +95,7 @@ function moreCardAfter() {}
 function moreCard(state) {
   // let BLACKJACK = state;
   console.log('4. moreCard() 더 카드를 받을지 여부');
-  console.log(state);
+  // console.log(state);
 
   let answer = prompt('카드를 더 받겠습니까? (Y / N)');
   if (!(answer == 'Y' || answer == 'y' || answer == 'N' || answer == 'n' || answer == null || answer == 'codesquad')) {
@@ -130,7 +130,7 @@ function promptType() {
 
 /** 카드 합계 */
 function cardSum(state, seperate) {
-  console.log('cardSum()');
+  console.log('cardSum() 카드 합계');
   let sum = 0;
   let card = '';
   let BLACKJACK;
@@ -149,20 +149,19 @@ function cardSum(state, seperate) {
 
 /** 카드 승패 비교 */
 function compareCard(BLACKJACK, seperate) {
-  console.log('compareCard()');
-  console.log(BLACKJACK);
-  8;
+  console.log('5. compareCard() 카드 승패 비교');
+  // console.log(BLACKJACK);
+
   // 플레이어가 카드를 더 안 받기로 결정하면 딜러의 카드합과 승부결과를 출력해 준다.
   if (seperate == 'dealer') {
     let [dealerCard, dealerSum] = cardSum(BLACKJACK, 'dealer');
     console.log(`딜러: ${dealerCard}`);
     console.log(`딜러의 카드 합계는 ${dealerSum}입니다.`);
 
-    let [playerCard, playerSum] = cardSum(BLACKJACK, 'player');
-
     // [2. 플레이어의 승리]
     // 플레이어의 카드 합이 딜러보다 크다면 플레이어의 승리이다.
     // 딜러의 카드가 22 이상이어도 플레이어의 승리이다.
+    let [playerCard, playerSum] = cardSum(BLACKJACK, 'player');
     if (playerSum > dealerSum || dealerSum >= 22) {
       if (playerSum == 21) {
         // 블랙잭(합이 21)으로 승리할 경우 베팅한 금액의 두 배를 돌려받는다.
@@ -304,11 +303,10 @@ function compareCard(BLACKJACK, seperate) {
 /** 결과 출력 */
 function printResult(state) {
   console.log('3. printResult() 결과 출력');
-  console.log(state);
+  // console.log(state);
   let BLACKJACK = state;
   BLACKJACK.turn += 1;
   const turn = BLACKJACK.turn;
-  console.log(BLACKJACK);
   console.log(`=========== Game ${turn} ===========`);
 
   let [card, playerSum] = cardSum(state, 'player');
@@ -318,27 +316,40 @@ function printResult(state) {
   return BLACKJACK;
 }
 
+/** 결과 출력 */
+function printResult(state) {
+  console.log('3. printResult() 결과 출력');
+  // console.log(state);
+  state.turn += 1;
+  console.log(`=========== Game ${state.turn} ===========`);
+
+  let [card, playerSum] = cardSum(state, 'player');
+  console.log(`플레이어 : ${card}`);
+  console.log(`총합 : ${playerSum}`);
+
+  return state;
+}
+
 /** 배팅금액 체크 */
 function checkMoney(state) {
   console.log('1. checkMoney() 배팅금액 체크');
-  let BLACKJACK = state;
-  let currentMoney = BLACKJACK.money;
-  let bettingMoney = BLACKJACK.betting;
+  let currentMoney = state.money;
+  let bettingMoney = state.betting;
 
   if (currentMoney < bettingMoney) {
     console.log('배팅 금액은 현재 재산을 초과할 수 없습니다.');
-    return betMoney(BLACKJACK);
+    return betMoney(state);
   }
 
   // BLACKJACK.money -= bettingMoney;
 
-  return BLACKJACK;
+  return state;
 }
 
 /** 카드 할당받기 */
 function devideCard(state, who) {
   console.log('2. devideCard() 카드 할당받기');
-  console.log(state);
+  // console.log(state);
   const money = state.betting;
   let BLACKJACK = state;
 
@@ -356,30 +367,32 @@ function devideCard(state, who) {
 
 /** 얼마를 배팅할지 */
 function betMoney(state) {
+  console.log('0. betMoney() 얼마를 배팅할지');
   return (
     new Promise((resolve, reject) => {
       setTimeout(() => {
-        let money = prompt('얼마를 거시겠습니까? \n숫자만 입력하세요.');
+        let money = prompt('얼마를 거시겠습니까? \n(100원 단위의 숫자만 입력하세요.)');
         //머니 유효성 체크 (숫자인지)
         if (isNaN(money)) {
-          console.log('숫자만 입력하세요');
-          return betMoney();
-          // return reject(new Error('betMoney() e: 숫자만 입력하세요'));
+          console.log('숫자만 입력하세요.');
+          return betMoney(state);
         }
+        //머니 유효성 체크 (100원 단위인지)
+        if (parseInt(money) % 100 != 0) {
+          console.log('금액은 100원 단위로만 입력하세요.');
+          return betMoney(state);
+        }
+
         console.log(`얼마를 거시겠습니까? ${money}`);
-        let BLACKJACK = state;
-        BLACKJACK.betting = parseInt(money);
-        resolve(BLACKJACK);
+        state.betting = parseInt(money);
+        resolve(state);
       }, 500);
     })
-      .then((result) => checkMoney(result)) //배팅금액 체크
+      .then((BLACKJACK) => checkMoney(BLACKJACK)) //배팅금액 체크
       .then((BLACKJACK) => devideCard(BLACKJACK, 'both')) //카드할당받기
       .then((BLACKJACK) => printResult(BLACKJACK)) //결과 출력
       .then((BLACKJACK) => moreCard(BLACKJACK)) //더 카드를 받을지 여부
-      .then(({ state, seperate }) => {
-        console.log('After destructuring:', state, seperate);
-        return compareCard(state, seperate);
-      }) //카드승패여부를 확인후
+      .then(({ state, seperate }) => compareCard(state, seperate)) //카드승패여부를 확인후
       // .then(({ BLACKJACK, playerSum, dealerSum }) => compareCard(BLACKJACK, playerSum, dealerSum)) //카드승패여부를 확인후
       // .then(({ BLACKJACK, type }) => promptType(BLACKJACK, type)) //더 카드를 받을지 여부를 표시
       .catch((error) => {
