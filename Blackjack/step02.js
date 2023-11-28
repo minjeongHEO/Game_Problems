@@ -74,28 +74,29 @@ function finishGame(state) {
 
 /** 한 게임 더 */
 function moreGame(state) {
-  // new Promise((resolve, reject) => {
-  console.log('moreGame() 더 게임을 할 지 여부');
-
   let answer = prompt('한 게임 더 하시겠습니까? (Y / N)');
-
   console.log(`한 게임 더 하시겠습니까? (Y / N) ${answer}`);
+
   if (!(answer == 'Y' || answer == 'y' || answer == 'N' || answer == 'n' || answer == null)) {
     console.log('잘못 입력하셨습니다.');
-    // resolve(moreCard(state));
-    // reject(new Error('retry'));
     return moreGame(state);
   }
 
-  let seperate = '';
   // 게임 더
   if (answer == 'Y' || answer == 'y') {
-    // seperate = 'both';
-    return betMoney(state);
+    // 플레이어의 자산이 0이 되었다면 강제로 게임이 종료된다.
+    if (state.money == 0) {
+      return finishGame(state);
+    } else {
+      // 덱의 카드가 10장 이하로 남아 있을 경우
+      if (state.cards.length <= 10) {
+        state.cards = randomCard();
+      }
+      return betMoney(state);
+    }
 
     //게임 끝
   } else if (answer == 'N' || answer == 'n' || answer == null) {
-    // seperate = 'dealer';
     return finishGame(state);
   }
 }
@@ -163,7 +164,7 @@ function moreCardAfter(BLACKJACK, seperate) {
     return moreCard(BLACKJACK);
 
     // 카드를 더 받기로 결정
-  } else if (seperate == 'both') {
+  } else if (seperate == 'both' || seperate == 'player') {
     devideCard(BLACKJACK, seperate);
     printResult(BLACKJACK);
     let [playerCard, playerSum] = cardSum(BLACKJACK, 'player');
