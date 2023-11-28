@@ -1,7 +1,7 @@
 /** 카드 더 받을 지 여부 */
 function moreCard(state) {
   new Promise((resolve, reject) => {
-    console.log('4. moreCard() 더 카드를 받을지 여부');
+    // console.log('4. moreCard() 더 카드를 받을지 여부');
 
     let answer = prompt('카드를 더 받겠습니까? (Y / N)');
     console.log(`카드를 더 받겠습니까? (Y / N) ${answer}`);
@@ -48,7 +48,7 @@ function moreCard(state) {
 
 /** 카드 합계 */
 function cardSum(state, seperate) {
-  console.log('cardSum() 카드 합계');
+  // console.log('cardSum() 카드 합계');
   let sum = 0;
   let card = '';
   let BLACKJACK;
@@ -91,6 +91,7 @@ function moreGame(state) {
 
   // 게임 더
   if (answer == 'Y' || answer == 'y') {
+    state.turn += 1;
     // 플레이어의 자산이 0이 되었다면 강제로 게임이 종료된다.
     if (state.money == 0) {
       return finishGame(state);
@@ -110,7 +111,7 @@ function moreGame(state) {
 
 /** 승패 여부 */
 function winLose(state, playerSum, dealerSum) {
-  console.log('6. winLose() 승패 비교');
+  // console.log('6. winLose() 승패 비교');
 
   // [1. 나의 승리 (플레이어 승리)]
   if (playerSum > dealerSum || dealerSum >= 22) {
@@ -130,6 +131,7 @@ function winLose(state, playerSum, dealerSum) {
 
     // [2. 나의 패배 (딜러 승리)]
   } else if (dealerSum > playerSum || playerSum >= 22 || dealerSum == 21) {
+    state.lose += 1;
     state.money -= state.betting;
     state.betting = 0;
     console.log(`💸당신의 패배입니다. 🤑현재 재산: ${state.money}`);
@@ -149,7 +151,7 @@ function winLose(state, playerSum, dealerSum) {
 
 /** 카드 받기 후 */
 function moreCardAfter(BLACKJACK, seperate) {
-  console.log('5. moreCardAfter() 카드 받기 후');
+  // console.log('5. moreCardAfter() 카드 받기 후');
   // console.log(BLACKJACK);
 
   // 플레이어가 카드를 더 안 받기로 결정하면 딜러의 카드합과 승부결과를 출력해 준다.
@@ -182,9 +184,8 @@ function moreCardAfter(BLACKJACK, seperate) {
 
 /** 결과 출력 */
 function printResult(state) {
-  console.log('3. printResult() 결과 출력');
+  // console.log('3. printResult() 결과 출력');
   // console.log(state);
-  state.turn += 1;
   console.log(`=========== Game ${state.turn} ===========`);
 
   let [card, playerSum] = cardSum(state, 'player');
@@ -196,7 +197,7 @@ function printResult(state) {
 
 /** 배팅금액 체크 */
 function checkMoney(state) {
-  console.log('1. checkMoney() 배팅금액 체크');
+  // console.log('1. checkMoney() 배팅금액 체크');
   let currentMoney = state.money;
   let bettingMoney = state.betting;
 
@@ -210,7 +211,7 @@ function checkMoney(state) {
 
 /** 카드 할당받기 */
 function devideCard(state, who) {
-  console.log('2. devideCard() 카드 할당받기');
+  // console.log('2. devideCard() 카드 할당받기');
   // console.log(state);
   const money = state.betting;
   let BLACKJACK = state;
@@ -229,7 +230,7 @@ function devideCard(state, who) {
 
 /** 얼마를 배팅할지 */
 function betMoney(state) {
-  console.log('0. betMoney() 얼마를 배팅할지');
+  // console.log('0. betMoney() 얼마를 배팅할지');
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       let money = prompt('얼마를 거시겠습니까? \n(100원 단위의 숫자만 입력하세요.)');
@@ -286,7 +287,7 @@ function randomCard() {
 
 function main() {
   BLACKJACK = {
-    turn: 0,
+    turn: 1,
     player: [],
     dealer: [],
     win: 0,
