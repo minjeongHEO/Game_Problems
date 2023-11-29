@@ -63,9 +63,31 @@ class Savemap {
   }
 }
 
-/**  간단한 프롬프트 */
+/** 5.간단한 프롬프트 */
 function orderPrompt(params) {
-  let order = prompt('SOKOBAN > \n w: 위쪽, a: 왼쪽, s: 아래쪽, d: 오른쪽, q: 프로그램 종료');
+  let order = prompt('SOKOBAN > \nw: 위쪽, a: 왼쪽, s: 아래쪽, d: 오른쪽, q: 프로그램 종료');
+  // 하나 이상의 문자를 입력받은 경우 순서대로 처리해서 단계별 상태를 출력한다.
+  if (order.length < 1) {
+    alert('하나 이상의 문자를 입력해주세요 \nw: 위쪽, a: 왼쪽, s: 아래쪽, d: 오른쪽, q: 프로그램 종료');
+    return orderPrompt();
+  }
+  if (
+    !(
+      order.includes('w') ||
+      order.includes('W') ||
+      order.includes('a') ||
+      order.includes('A') ||
+      order.includes('s') ||
+      order.includes('S') ||
+      order.includes('d') ||
+      order.includes('D') ||
+      order.includes('q') ||
+      order.includes('Q')
+    )
+  ) {
+    alert('(경고) 지원하지 않는 명령입니다!');
+    return orderPrompt();
+  }
 }
 
 /** 2.맵 객체 생성 */
@@ -76,7 +98,7 @@ function createObj(arrays) {
       displayMapInfo(maps); //4. 출력
     }
     resolve();
-  }).then(() => orderPrompt());
+  }).then(() => orderPrompt()); //5.간단한 프롬프트
 }
 
 /** 1.문자열 입력받기 */
