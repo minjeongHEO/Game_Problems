@@ -63,12 +63,20 @@ class Savemap {
   }
 }
 
+/**  간단한 프롬프트 */
+function orderPrompt(params) {
+  let order = prompt('SOKOBAN > \n w: 위쪽, a: 왼쪽, s: 아래쪽, d: 오른쪽, q: 프로그램 종료');
+}
+
 /** 2.맵 객체 생성 */
 function createObj(arrays) {
-  for (let i = 0; i < arrays.length; i++) {
-    let maps = new Savemap(arrays[i], i + 1);
-    displayMapInfo(maps);
-  }
+  new Promise((resolve, reject) => {
+    for (let i = 0; i < arrays.length; i++) {
+      let maps = new Savemap(arrays[i], i + 1); //3.객체 생성
+      displayMapInfo(maps); //4. 출력
+    }
+    resolve();
+  }).then(() => orderPrompt());
 }
 
 /** 1.문자열 입력받기 */
