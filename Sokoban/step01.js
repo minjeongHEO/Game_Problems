@@ -1,15 +1,17 @@
 /** 맵 출력 */
 function displayMapInfo(map) {
-  console.log(`\nStage ${map.stageNum}`);
+  console.log(`Stage ${map.stageNum}`);
   console.log(``);
-  console.log(`${map.map}`);
+  console.log(`${map.mapToString}`);
   console.log(``);
   console.log(`가로크기: ${map.width}`);
   console.log(`세로크기: ${map.height}`);
   console.log(`구멍의 수: ${map.hall}`);
   console.log(`공의 수: ${map.ball}`);
   console.log(`플레이어 위치: ${map.playerLoc[0]}행 ${map.playerLoc[1]}열`);
+  console.log(``);
 }
+
 // (2) 데이터 저장하기
 // 객체에는 스테이지 정보 및 원래 지도 정보가 들어있어야 한다.
 // 위 값을 읽고 저장할 수 있는 적당한 객체 (혹은 클래스)를 생성하고 문자열로부터 읽은 값을 변환해서 저장한다.
@@ -17,6 +19,7 @@ class Savemap {
   constructor(textArr, stageNum) {
     this.stageNum = stageNum;
     this.map = textArr;
+    this.mapToString = '';
     this.hall = 0; //O	구멍(Hall)	=> 1
     this.ball = 0; //o	공(Ball)	=> 2
     this.player = 0; //P	플레이어(Player)	=> 3
@@ -30,9 +33,9 @@ class Savemap {
 
   processMap() {
     let maxRowLength = 0; //변수 초기화 추가
-
     for (let i = 0; i < this.map.length; i++) {
       for (let j = 0; j < this.map[i].length; j++) {
+        this.mapToString += this.map[i][j];
         switch (this.map[i][j]) {
           case 'O':
             this.hall++;
@@ -54,16 +57,24 @@ class Savemap {
         // 최대 길이 갱신 // *2)
         maxRowLength = Math.max(maxRowLength, this.map[i].length);
       }
+      this.mapToString += '\n';
     }
     this.width = maxRowLength;
     this.height = this.map.length;
   }
 }
 
-/** 문자열 입력받기 */
+/** 2.맵 객체 생성 */
+function createObj(arrays) {
+  for (let i = 0; i < arrays.length; i++) {
+    let maps = new Savemap(arrays[i], i + 1);
+    displayMapInfo(maps);
+  }
+}
+
+/** 1.문자열 입력받기 */
 function convertArray(inputValue) {
   let inputLine = inputValue.split('\n');
-  console.log(inputLine);
   stageArr = [];
   textArr = [];
   for (let i = 0; i < inputLine.length; i++) {
@@ -79,21 +90,10 @@ function convertArray(inputValue) {
     textArr.push(inputText);
   }
   stageArr.push(textArr);
-
-  console.log(stageArr);
   return stageArr;
 }
 
-/** 맵 객체 생성 */
-function createObj(arrays) {
-  for (let i = 0; i < arrays.length; i++) {
-    let maps = new Savemap(arrays[i], i + 1);
-    console.log(maps);
-    displayMapInfo(maps);
-  }
-}
-
-/** 입력버튼 클릭 시 */
+/** 0.입력버튼 클릭 시 */
 document.getElementById('reg-btn').addEventListener('click', function (e) {
   const inputValue = document.getElementById('text-area').value;
   if (inputValue == '' || inputValue === null || inputValue === undefined) {
@@ -101,8 +101,6 @@ document.getElementById('reg-btn').addEventListener('click', function (e) {
     document.getElementById('text-area').focus();
   } else {
     createObj(convertArray(inputValue));
-    // let maps = new Savemap(convertArray(inputValue));
-    // displayMapInfo(maps);
   }
 });
 
