@@ -3,6 +3,7 @@ function displayMapInfo(map) {
   // console.log(`Stage ${map.stageNum}`);
   console.log(`Stage 2`);
   console.log(``);
+  console.log(`${map.map}`);
   console.log(`${map.mapToString}`);
   console.log(``);
   console.log(`가로크기: ${map.width}`);
@@ -15,9 +16,8 @@ function displayMapInfo(map) {
 
 /** 3.객체 데이터 저장*/
 class Savemap {
-  constructor(textArr, stageNum) {
-    this.stageNum = stageNum;
-    this.map = textArr;
+  constructor(textArr) {
+    this.map = textArr; // , ,#,#,#,#,#,#,#,#,#,#, , ,O, , ,#,#,#,#, , , , ,o, , , , ,#,#, ,O,o, ,P, ,o,O, ,#,#,#,#, , ,o, , ,#,#,#, ,#, , , ,O, , ,#, , ,#,#,#,#,#,#,#,#
     this.mapToString = '';
     this.hall = 0; //O	구멍(Hall)	=> 1
     this.ball = 0; //o	공(Ball)	=> 2
@@ -63,42 +63,142 @@ class Savemap {
   }
 }
 
-/** 5.간단한 프롬프트 */
-function orderPrompt(params) {
-  let order = prompt('SOKOBAN > \nw: 위쪽, a: 왼쪽, s: 아래쪽, d: 오른쪽, q: 프로그램 종료');
-  // 하나 이상의 문자를 입력받은 경우 순서대로 처리해서 단계별 상태를 출력한다.
-  if (order.length < 1) {
-    alert('하나 이상의 문자를 입력해주세요 \nw: 위쪽, a: 왼쪽, s: 아래쪽, d: 오른쪽, q: 프로그램 종료');
-    return orderPrompt();
-  }
-  if (
-    !(
-      order.includes('w') ||
-      order.includes('W') ||
-      order.includes('a') ||
-      order.includes('A') ||
-      order.includes('s') ||
-      order.includes('S') ||
-      order.includes('d') ||
-      order.includes('D') ||
-      order.includes('q') ||
-      order.includes('Q')
-    )
-  ) {
-    alert('(경고) 지원하지 않는 명령입니다!');
-    return orderPrompt();
+function gameOver() {
+  console.log('💣Bye~');
+
+  if (confirm('다시 하시겠습니까?')) {
+    main();
   }
 }
 
+function readOrder(orderArr, maps) {
+  // console.log('readOrder()');
+  // console.log(orderArr);
+  // console.log(maps);
+  // w: 위쪽
+  // a: 왼쪽
+  // s: 아래쪽
+  // d: 오른쪽
+  // q: 프로그램 종료
+  const dir = ['w', 'a', 's', 'd', 'q'];
+  const loc = [
+    [-1, 0],
+    [0, -1],
+    [1, 0],
+    [0, 1],
+  ];
+  const width = maps.width;
+  const height = maps.height;
+
+  for (let i = 0; i < orderArr.length; i++) {
+    let x = maps.playerLoc[0];
+    let y = maps.playerLoc[1];
+    let order = orderArr[i];
+
+    //게임 종료
+    if (order == 'q') {
+      return gameOver();
+    }
+
+    //   console.log('orderArr[i]: ', orderArr[i]);
+    //   console.log('dir.indexOf(orderArr[i]): ', dir.indexOf(orderArr[i]));
+    let idx = dir.indexOf(order);
+    let nx = x + loc[idx][0];
+    let ny = y + loc[idx][1];
+
+    // console.log(`${maps.mapToString}`);
+
+    console.log('x: ', x);
+    console.log('y: ', y);
+    console.log('nx: ', nx);
+    console.log('ny: ', ny);
+
+    if (nx > 0 && nx <= height && ny > 0 && ny <= width) {
+      //     console.log('map 에 위치함!!');
+      // 근데 구멍으로 이동하면 게임 종료
+      if (maps.map[nx][ny] == 'O') {
+        console.log(`${order} : 구멍에 빠졌습니다!`);
+        return gameOver();
+      }
+
+      // 이동 중 벽이나 공등 다른 물체에 부딪히면
+      if (maps.map[nx - 1][ny - 1] == '#' || maps.map[nx - 1][ny - 1] == 'o') {
+        // console.log(`${maps.mapToString}`);
+        console.log(maps.mapToString);
+        console.log(`${orderArr[i]} : (경고!) 해당 명령을 수행할 수 없습니다! 물체에 가로막혀 있습니다.`);
+        console.log('');
+        continue;
+      } else {
+        maps.map[x - 1][y - 1] = ' ';
+        maps.map[nx - 1][ny - 1] = 'P';
+        maps.playerLoc = [nx, ny];
+        maps = new Savemap(maps.map); //3.객체 재생성;
+
+        console.log(maps.mapToString);
+        console.log(`${orderArr[i]} : 이동합니다.`);
+        console.log('');
+      }
+    } else {
+      console.log(maps.mapToString);
+      console.log(maps.map);
+      console.log(`${orderArr[i]} : (경고!) 해당 명령을 수행할 수 없습니다! 해당 맵을 벗어납니다.`);
+      continue;
+    }
+
+    console.log('끝~!');
+    orderPrompt(maps);
+  }
+}
+
+/** 5.간단한 프롬프트 */
+function orderPrompt(maps) {
+  new Promise((resolve, reject) => {
+    setTimeout(() => {
+      let order = prompt('SOKOBAN > \nw: 위쪽, a: 왼쪽, s: 아래쪽, d: 오른쪽, q: 프로그램 종료');
+      // 하나 이상의 문자를 입력받은 경우 순서대로 처리해서 단계별 상태를 출력한다.
+
+      if (order === null) {
+        return;
+      }
+
+      if (order.length < 1) {
+        alert('하나 이상의 문자를 입력해주세요 \nw: 위쪽, a: 왼쪽, s: 아래쪽, d: 오른쪽, q: 프로그램 종료');
+        return orderPrompt(maps);
+      }
+      if (
+        !(
+          order.includes('w') ||
+          order.includes('W') ||
+          order.includes('a') ||
+          order.includes('A') ||
+          order.includes('s') ||
+          order.includes('S') ||
+          order.includes('d') ||
+          order.includes('D') ||
+          order.includes('q') ||
+          order.includes('Q')
+        )
+      ) {
+        alert('(경고) 지원하지 않는 명령입니다!');
+        return orderPrompt(maps);
+      }
+      orderArr = order.toLowerCase().split('');
+      console.log(`SOKOBAN> ${order.toLowerCase()}`);
+
+      resolve({ orderArr, maps });
+    }, 500);
+  }).then(({ orderArr, maps }) => readOrder(orderArr, maps));
+}
+// 하나 이상의 문자를 입력받은 경우 순서대로 처리해서 단계별 상태를 출력한다.
+
 /** 2.맵 객체 생성 */
 function createObj(arrays) {
-  new Promise((resolve, reject) => {
-    for (let i = 0; i < arrays.length; i++) {
-      let maps = new Savemap(arrays[i], i + 1); //3.객체 생성
-      displayMapInfo(maps); //4. 출력
-    }
-    resolve();
-  }).then(() => orderPrompt()); //5.간단한 프롬프트
+  for (let i = 0; i < arrays.length; i++) {
+    // let maps = new Savemap(arrays[i], i + 1); //3.객체 생성
+    let maps = new Savemap(arrays[i]); //3.객체 생성
+    displayMapInfo(maps); //4. 출력
+    orderPrompt(maps); //5.간단한 프롬프트
+  }
 }
 
 /** 1.문자열 입력받기 */
@@ -135,16 +235,6 @@ function main(params) {
   createObj(convertArray(inputValue));
 }
 main();
-// /** 0.입력버튼 클릭 시 */
-// document.getElementById('reg-btn').addEventListener('click', function (e) {
-//   const inputValue = document.getElementById('text-area').value;
-//   if (inputValue == '' || inputValue === null || inputValue === undefined) {
-//     alert('텍스트를 입력해주세요');
-//     document.getElementById('text-area').focus();
-//   } else {
-//     createObj(convertArray(inputValue));
-//   }
-// });
 
 /**
  * 1) 클래스의 인스턴스(;클래스를 통해 생성된 객체) 메서드 (this.processMap())
@@ -156,20 +246,4 @@ main();
  *    ex) maxRowLength와 this.map[i].length 중에서 더 큰 값을 maxRowLength에 할당
  *        따라서 이 코드는 현재까지의 최대 길이를 계속해서 갱신하는 역할을 합니다.
  *        반복문이 끝날 때에는 이 maxRowLength에는 가장 긴 행의 길이가 저장되어 있게 됩니다.
- */
-
-/*
-Stage 1
-#####
-#OoP#
-#####
-=====
-Stage 2
-  #######
-###  O  ###
-#    o    #
-# Oo P oO #
-###  o  ###
- #   O  # 
- ########
  */
