@@ -45,7 +45,7 @@ class Savemap {
             break;
           case 'P':
             this.player++;
-            this.playerLoc = [i, j];
+            this.playerLoc = [i + 1, j + 1];
             break;
           case '#':
             this.wall++;
@@ -105,7 +105,7 @@ document.getElementById('reg-btn').addEventListener('click', function (e) {
 });
 
 /**
- * 1) 클래스의 인스턴스 메서드 (this.processMap())
+ * 1) 클래스의 인스턴스(;클래스를 통해 생성된 객체) 메서드 (this.processMap())
  *    : 메서드 내에서 this 키워드를 사용하여 클래스의 속성들을 접근할 수 있다
  *    클래스의 인스턴스 메서드는 메서드 내에서 this로 해당 클래스의 인스턴스를 가리킨다
  *    ex) this.hall, this.ball, this.player,... 등의 속성은 processMap 메서드에서 this를 통해 접근할 수 있다.
