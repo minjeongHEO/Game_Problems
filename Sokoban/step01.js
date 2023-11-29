@@ -1,4 +1,4 @@
-/** 맵 출력 */
+/** 4.맵 출력 */
 function displayMapInfo(map) {
   console.log(`Stage ${map.stageNum}`);
   console.log(``);
@@ -12,9 +12,7 @@ function displayMapInfo(map) {
   console.log(``);
 }
 
-// (2) 데이터 저장하기
-// 객체에는 스테이지 정보 및 원래 지도 정보가 들어있어야 한다.
-// 위 값을 읽고 저장할 수 있는 적당한 객체 (혹은 클래스)를 생성하고 문자열로부터 읽은 값을 변환해서 저장한다.
+/** 3.객체 데이터 저장*/
 class Savemap {
   constructor(textArr, stageNum) {
     this.stageNum = stageNum;

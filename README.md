@@ -97,9 +97,31 @@
 
             inputNumber() 재호출
 
----
-
 # 문제 2: 소코반
+
+1.  입력
+
+    ✔ 입력란에 맵 정보 입력 후 [입력]버튼 클릭
+
+        betMoney()
+
+2.  동작
+
+    ✔ 입력받은 문자열에서 "=", "Stage" 줄은 제외 후 배열로 변환
+
+        convertArray()
+
+    ✔ Class를 사용하여 맵 객체 생성한다.
+
+        createObj()
+
+            new Savemap()
+
+3.  출력
+
+    ✔ 결과 출력
+
+        displayMapInfo()
 
 # 문제 3: 간단 블랙잭
 
