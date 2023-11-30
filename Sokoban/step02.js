@@ -136,7 +136,7 @@ function readOrder(orderArr, maps) {
         maps = new Savemap(maps.map); //3.객체 재생성;
 
         console.log(maps.mapToString);
-        console.log(`${orderArr[i]} : ${explan[i]}으로 이동합니다.`);
+        console.log(`${orderArr[i]} : ${explan[idx]}으로 이동합니다.`);
 
         console.log('');
       }
@@ -146,10 +146,8 @@ function readOrder(orderArr, maps) {
       console.log(`${orderArr[i]} : (경고!) 해당 명령을 수행할 수 없습니다! 해당 맵을 벗어납니다.`);
       continue;
     }
-
-    console.log('끝~!');
-    orderPrompt(maps);
   }
+  orderPrompt(maps);
 }
 
 /** 5.간단한 프롬프트 */
