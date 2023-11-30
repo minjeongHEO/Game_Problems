@@ -1,16 +1,8 @@
 /** 4.맵 출력 */
 function displayMapInfo(map) {
-  // console.log(`Stage ${map.stageNum}`);
   console.log(`Stage 2`);
   console.log(``);
-  console.log(`${map.map}`);
   console.log(`${map.mapToString}`);
-  console.log(``);
-  console.log(`가로크기: ${map.width}`);
-  console.log(`세로크기: ${map.height}`);
-  console.log(`구멍의 수: ${map.hall}`);
-  console.log(`공의 수: ${map.ball}`);
-  console.log(`플레이어 위치: ${map.playerLoc[0]}행 ${map.playerLoc[1]}열`);
   console.log(``);
 }
 
@@ -72,14 +64,6 @@ function gameOver() {
 }
 
 function readOrder(orderArr, maps) {
-  // console.log('readOrder()');
-  // console.log(orderArr);
-  // console.log(maps);
-  // w: 위쪽
-  // a: 왼쪽
-  // s: 아래쪽
-  // d: 오른쪽
-  // q: 프로그램 종료
   const dir = ['w', 'a', 's', 'd', 'q'];
   const explan = ['위쪽', '왼쪽', '아래쪽', '오른쪽'];
   const loc = [
@@ -101,22 +85,11 @@ function readOrder(orderArr, maps) {
       return gameOver();
     }
 
-    //   console.log('orderArr[i]: ', orderArr[i]);
-    //   console.log('dir.indexOf(orderArr[i]): ', dir.indexOf(orderArr[i]));
     let idx = dir.indexOf(order);
     let nx = x + loc[idx][0];
     let ny = y + loc[idx][1];
 
-    // console.log(`${maps.mapToString}`);
-
-    console.log('x: ', x);
-    console.log('y: ', y);
-    console.log('nx: ', nx);
-    console.log('ny: ', ny);
-
     if (nx > 0 && nx <= height && ny > 0 && ny <= width) {
-      //     console.log('map 에 위치함!!');
-      // 근데 구멍으로 이동하면 게임 종료
       if (maps.map[nx - 1][ny - 1] == 'O') {
         console.log(`${order} : 구멍에 빠졌습니다!`);
         return gameOver();
@@ -137,7 +110,6 @@ function readOrder(orderArr, maps) {
 
         console.log(maps.mapToString);
         console.log(`${orderArr[i]} : ${explan[idx]}으로 이동합니다.`);
-
         console.log('');
       }
     } else {
@@ -165,20 +137,7 @@ function orderPrompt(maps) {
         alert('하나 이상의 문자를 입력해주세요 \nw: 위쪽, a: 왼쪽, s: 아래쪽, d: 오른쪽, q: 프로그램 종료');
         return orderPrompt(maps);
       }
-      if (
-        !(
-          order.includes('w') ||
-          order.includes('W') ||
-          order.includes('a') ||
-          order.includes('A') ||
-          order.includes('s') ||
-          order.includes('S') ||
-          order.includes('d') ||
-          order.includes('D') ||
-          order.includes('q') ||
-          order.includes('Q')
-        )
-      ) {
+      if (!/^[wasdqWASDQ]+$/.test(order)) {
         alert('(경고) 지원하지 않는 명령입니다!');
         return orderPrompt(maps);
       }
@@ -246,4 +205,6 @@ main();
  *    ex) maxRowLength와 this.map[i].length 중에서 더 큰 값을 maxRowLength에 할당
  *        따라서 이 코드는 현재까지의 최대 길이를 계속해서 갱신하는 역할을 합니다.
  *        반복문이 끝날 때에는 이 maxRowLength에는 가장 긴 행의 길이가 저장되어 있게 됩니다.
+ * 3) 정규식
+ *    ^ : 문자열의 시작
  */
