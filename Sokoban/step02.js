@@ -97,7 +97,6 @@ function readOrder(orderArr, maps) {
 
       // 이동 중 벽이나 공등 다른 물체에 부딪히면
       if (maps.map[nx - 1][ny - 1] == '#' || maps.map[nx - 1][ny - 1] == 'o') {
-        // console.log(`${maps.mapToString}`);
         console.log(maps.mapToString);
         console.log(`${orderArr[i]} : (경고!) 해당 명령을 수행할 수 없습니다! 물체에 가로막혀 있습니다.`);
         console.log('');
@@ -127,7 +126,6 @@ function orderPrompt(maps) {
   new Promise((resolve, reject) => {
     setTimeout(() => {
       let order = prompt('SOKOBAN > \nw: 위쪽, a: 왼쪽, s: 아래쪽, d: 오른쪽, q: 프로그램 종료');
-      // 하나 이상의 문자를 입력받은 경우 순서대로 처리해서 단계별 상태를 출력한다.
 
       if (order === null) {
         return;
@@ -137,6 +135,7 @@ function orderPrompt(maps) {
         alert('하나 이상의 문자를 입력해주세요 \nw: 위쪽, a: 왼쪽, s: 아래쪽, d: 오른쪽, q: 프로그램 종료');
         return orderPrompt(maps);
       }
+      // *3)
       if (!/^[wasdqWASDQ]+$/.test(order)) {
         alert('(경고) 지원하지 않는 명령입니다!');
         return orderPrompt(maps);
@@ -148,7 +147,6 @@ function orderPrompt(maps) {
     }, 500);
   }).then(({ orderArr, maps }) => readOrder(orderArr, maps));
 }
-// 하나 이상의 문자를 입력받은 경우 순서대로 처리해서 단계별 상태를 출력한다.
 
 /** 2.맵 객체 생성 */
 function createObj(arrays) {
@@ -190,7 +188,7 @@ let inputValue = `Stage 2
  #   O  # 
  ########`;
 
-function main(params) {
+function main() {
   createObj(convertArray(inputValue));
 }
 main();
