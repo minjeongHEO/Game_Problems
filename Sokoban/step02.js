@@ -117,7 +117,7 @@ function readOrder(orderArr, maps) {
     if (nx > 0 && nx <= height && ny > 0 && ny <= width) {
       //     console.log('map 에 위치함!!');
       // 근데 구멍으로 이동하면 게임 종료
-      if (maps.map[nx][ny] == 'O') {
+      if (maps.map[nx - 1][ny - 1] == 'O') {
         console.log(`${order} : 구멍에 빠졌습니다!`);
         return gameOver();
       }
