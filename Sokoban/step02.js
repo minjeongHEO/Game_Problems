@@ -81,6 +81,7 @@ function readOrder(orderArr, maps) {
   // d: 오른쪽
   // q: 프로그램 종료
   const dir = ['w', 'a', 's', 'd', 'q'];
+  const explan = ['위쪽', '왼쪽', '아래쪽', '오른쪽'];
   const loc = [
     [-1, 0],
     [0, -1],
@@ -135,7 +136,8 @@ function readOrder(orderArr, maps) {
         maps = new Savemap(maps.map); //3.객체 재생성;
 
         console.log(maps.mapToString);
-        console.log(`${orderArr[i]} : 이동합니다.`);
+        console.log(`${orderArr[i]} : ${explan[i]}으로 이동합니다.`);
+
         console.log('');
       }
     } else {
